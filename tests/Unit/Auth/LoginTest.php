@@ -10,12 +10,16 @@ class LoginTest extends TestCase
 {
     public function testShouldReturnInvalidCredentials()
     {
+        $user = User::factory()->create([
+            "email" => "login@gmail.com",
+            "password" => "Abc@12345"
+        ]);
 
         // Assert that the user is present in the database
-        $this->assertDatabaseHas('users', ['email' => 'abc@gmail.com']);
+        $this->assertDatabaseHas('users', ['email' => 'login@gmail.com']);
 
         $response = $this->postJson('/api/auth/login', [
-            "email" => "abc1@gmail.com",
+            "email" => "login1@gmail.com",
             "password" => "Abc@12345",
         ]);
 
@@ -26,7 +30,7 @@ class LoginTest extends TestCase
             ]);
 
         $response1 = $this->postJson('/api/auth/login', [
-            "email" => "abc@gmail.com",
+            "email" => "login@gmail.com",
             "password" => "Abc@123456",
         ]);
 
@@ -55,7 +59,7 @@ class LoginTest extends TestCase
 
     public function testShouldReturnUserLoggedIn() {
         $response = $this->postJson('/api/auth/login', [
-                "email" => "abc@gmail.com",
+                "email" => "login@gmail.com",
                 "password" => "Abc@12345"
         ]);
 

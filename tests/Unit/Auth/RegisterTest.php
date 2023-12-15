@@ -11,7 +11,7 @@ class RegisterTest extends TestCase
     public function testShouldReturnPassowrdDidNotMatch() {
         $response = $this->postJson('/api/auth/register', [
                 "name" => "Laravel",
-                "email" => "abc@gmail.com",
+                "email" => "register@gmail.com",
                 "password" => "Abc@12345",
                 "password_confirmation" => "Abc@123456"
         ]);
@@ -29,7 +29,7 @@ class RegisterTest extends TestCase
 
     public function testShouldReturnTheFieldNameIsRequire() {
         $response = $this->postJson('/api/auth/register', [
-                "email" => "abc@gmail.com",
+                "email" => "register@gmail.com",
                 "password" => "Abc@12345",
                 "password_confirmation" => "Abc@12345"
         ]);
@@ -48,7 +48,7 @@ class RegisterTest extends TestCase
     public function testShouldReturnUserSuccessfullyRegistered() {
         $response = $this->postJson('/api/auth/register', [
                 "name" => "Test",
-                "email" => "abc@gmail.com",
+                "email" => "register@gmail.com",
                 "password" => "Abc@12345",
                 "password_confirmation" => "Abc@12345"
         ]);
@@ -64,15 +64,15 @@ class RegisterTest extends TestCase
 
         // First, create a user with the given email
         User::factory()->create([
-            'email' => 'abc1@gmail.com',
+            'email' => 'register1@gmail.com',
         ]);
 
         // Assert that the user is present in the database
-        $this->assertDatabaseHas('users', ['email' => 'abc@gmail.com']);
+        $this->assertDatabaseHas('users', ['email' => 'register1@gmail.com']);
 
         $response = $this->postJson('/api/auth/register', [
                 "name" => "Test",
-                "email" => "abc1@gmail.com",
+                "email" => "register1@gmail.com",
                 "password" => "Abc@12345",
                 "password_confirmation" => "Abc@12345"
         ]);
