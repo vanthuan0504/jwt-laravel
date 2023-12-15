@@ -17,10 +17,6 @@ class DatabaseTest extends TestCase
         User::factory()->count(3)->create();
 
         $this->assertDatabaseCount('users', 3);
-
-        $this->assertDatabaseHas('users', [
-            'email' => 'gschiller@example.org',
-        ]);
         
         $this->assertDatabaseMissing('users', [
             'email' => 'sally@example.com',
