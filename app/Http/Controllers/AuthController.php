@@ -24,7 +24,7 @@ class AuthController extends Controller
             return response()->json([
                 'status' => false,
                 'message' => $validator->errors()
-            ], 422);
+            ], 400);
         }
         if (!$token = auth()->attempt($validator->validated())) {
             return response()->json([
@@ -34,7 +34,7 @@ class AuthController extends Controller
         }
         return response()->json([
             'status' => true,
-            'message' => 'User has regained acccess token',
+            'message' => 'User logged in',
             'data' => $this->createNewtoken($token)
         ], 200);
     }
