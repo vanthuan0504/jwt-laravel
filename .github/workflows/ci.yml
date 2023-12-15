@@ -39,6 +39,9 @@ jobs:
     - name: Directory Permissions
       run: chmod -R 777 storage bootstrap/cache
 
+    - name: Database Migration
+      run: php artisan migrate
+      
     - name: Run Testsuit
       run: vendor/bin/phpunit tests/
 
