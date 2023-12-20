@@ -163,7 +163,7 @@ class AuthController extends Controller
             'password' => 'required|string|confirmed|min:6'
         ]);
 
-        if ($validator->failed()) {
+        if ($validator->fails()) {
             return ResponseHelper::jsonResponse(
                 false,
                 'Invalid data',

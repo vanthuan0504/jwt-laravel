@@ -3,26 +3,12 @@
 namespace Tests\Unit;
 
 use Tests\TestCase;
-use Database\Factories\UserFactory;
 use App\Models\User;
-use App\Models\Role;
 
 class LoginTest extends TestCase
 {
     public function testShouldReturnInvalidCredentials()
     {
-        // Create role
-        foreach ([
-            ['name' => 'Admin', 'code' => 'ADMIN'],
-            ['name' => 'Supervisor', 'code' => 'SUPERVISOR'],
-            ['name' => 'Staff', 'code' => 'STAFF'],
-            ['name' => 'User', 'code' => 'USER']
-        ] as $roleData) {
-            Role::firstOrCreate($roleData);
-        }
-
-        $userRole = Role::where('code', 'USER')->first();
-
         // Create user
         $userToDelete = User::where('email', 'login@gmail.com')->first();
         
@@ -34,8 +20,7 @@ class LoginTest extends TestCase
         }
         $user = User::factory()->create([
             "email" => "login@gmail.com",
-            "password" => "Abc@12345",
-            "role_id" => $userRole->id
+            "password" => "Abc@12345"
         ]);
 
         // Assert that the user is present in the database
@@ -74,7 +59,8 @@ class LoginTest extends TestCase
         $response->assertStatus(400)
             ->assertJson([
                 'status' => false,
-                'message' => [
+                "message" => "Invalid data",
+                'data' => [
                     "email" => [
                         "The email field is required."
                     ]
@@ -91,7 +77,7 @@ class LoginTest extends TestCase
         $response->assertStatus(200)
             ->assertJson([
                 'status' => true,
-                'message' => 'User logged in'
+                'message' => 'Logged in'
         ]);
 
         $response->assertStatus(200)

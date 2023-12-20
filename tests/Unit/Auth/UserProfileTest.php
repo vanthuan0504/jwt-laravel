@@ -10,9 +10,9 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UserProfileTest extends TestCase
 {
-    public function testShouldNotGetUserProfile()
+    public function testShouldNotReturnUserProfile()
     {
-        $response = $this->get('/api/users/me');
+        $response = $this->get('/api/auth/me');
 
         $response->assertStatus(401)
             ->assertJson([
@@ -22,11 +22,9 @@ class UserProfileTest extends TestCase
 
     public function testShouldReturnUserProfile()
     {
-        $userRole = Role::where('code', 'USER')->first();
         $user = User::factory()->create([
             "name" => "User Role",
-            "email" => 'user-role@gmail.com',
-            "role_id" => $userRole->id
+            "email" => 'user-role@gmail.com'
 
         ]);
         // Simulate authentication by creating a token for the user
@@ -38,7 +36,7 @@ class UserProfileTest extends TestCase
         // Make a request to the authenticated route
         $response = $this->withHeaders([
             'Authorization' => 'Bearer ' . $token,
-        ])->get('/api/users/me');
+        ])->get('/api/auth/me');
 
         $response->assertStatus(200)
             ->assertJson([

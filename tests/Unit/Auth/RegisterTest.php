@@ -8,7 +8,7 @@ use App\Models\User;
 
 class RegisterTest extends TestCase
 {
-    public function testShouldReturnPassowrdDidNotMatch()
+    public function testShouldReturnPasswordDidNotMatch()
     {
         $response = $this->postJson('/api/auth/register', [
             "name" => "Laravel",
@@ -20,7 +20,8 @@ class RegisterTest extends TestCase
         $response->assertStatus(400)
             ->assertJson([
                 'status' => false,
-                'message' => [
+                'message' => 'Invalid data',
+                'data' => [
                     "password" => [
                         "The password field confirmation does not match."
                     ]
@@ -39,7 +40,8 @@ class RegisterTest extends TestCase
         $response->assertStatus(400)
             ->assertJson([
                 'status' => false,
-                'message' => [
+                "message" => "Invalid data",
+                'data' => [
                     "name" => [
                         "The name field is required."
                     ]
@@ -49,6 +51,15 @@ class RegisterTest extends TestCase
 
     public function testShouldReturnUserSuccessfullyRegistered()
     {
+        $userToDelete = User::where('email', 'register@gmail.com')->first();
+        
+        if ($userToDelete) {
+            $userToDelete->delete();
+            echo 'Removed User.';
+        } else {
+            echo 'User does not exist.';
+        }
+
         $response = $this->postJson('/api/auth/register', [
             "name" => "Test",
             "email" => "register@gmail.com",
@@ -59,7 +70,7 @@ class RegisterTest extends TestCase
         $response->assertStatus(201)
             ->assertJson([
                 'status' => true,
-                'message' => "User successfully registered"
+                'message' => "Registered"
             ]);
             
         $userToDelete = User::where('email', 'register@gmail.com')->first();
@@ -77,11 +88,11 @@ class RegisterTest extends TestCase
 
         // First, create a user with the given email
         $user = User::factory()->create([
-            'email' => 'register1@gmail.com',
+            'email' => 'register@gmail.com',
         ]);
 
         // Assert that the user is present in the database
-        $this->assertDatabaseHas('users', ['email' => 'register1@gmail.com']);
+        $this->assertDatabaseHas('users', ['email' => 'register@gmail.com']);
 
         $response = $this->postJson('/api/auth/register', [
             "name" => "Test",
@@ -93,7 +104,8 @@ class RegisterTest extends TestCase
         $response->assertStatus(400)
             ->assertJson([
                 'status' => false,
-                'message' => [
+                "message" => "Invalid data",
+                'data' => [
                     "email" => [
                         "The email has already been taken."
                     ]
