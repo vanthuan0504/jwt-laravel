@@ -96,7 +96,7 @@ class RegisterTest extends TestCase
 
         $response = $this->postJson('/api/auth/register', [
             "name" => "Test",
-            "email" => "register1@gmail.com",
+            "email" => "register@gmail.com",
             "password" => "Abc@12345",
             "password_confirma tion" => "Abc@12345"
         ]);
