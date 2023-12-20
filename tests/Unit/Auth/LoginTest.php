@@ -5,14 +5,37 @@ namespace Tests\Unit;
 use Tests\TestCase;
 use Database\Factories\UserFactory;
 use App\Models\User;
+use App\Models\Role;
 
 class LoginTest extends TestCase
 {
     public function testShouldReturnInvalidCredentials()
     {
+        // Create role
+        foreach ([
+            ['name' => 'Admin', 'code' => 'ADMIN'],
+            ['name' => 'Supervisor', 'code' => 'SUPERVISOR'],
+            ['name' => 'Staff', 'code' => 'STAFF'],
+            ['name' => 'User', 'code' => 'USER']
+        ] as $roleData) {
+            Role::firstOrCreate($roleData);
+        }
+
+        $userRole = Role::where('code', 'USER')->first();
+
+        // Create user
+        $userToDelete = User::where('email', 'login@gmail.com')->first();
+        
+        if ($userToDelete) {
+            $userToDelete->delete();
+            echo 'Removed User.';
+        } else {
+            echo 'User does not exist.';
+        }
         $user = User::factory()->create([
             "email" => "login@gmail.com",
-            "password" => "Abc@12345"
+            "password" => "Abc@12345",
+            "role_id" => $userRole->id
         ]);
 
         // Assert that the user is present in the database
@@ -39,6 +62,8 @@ class LoginTest extends TestCase
                 'status' => false,
                 'message' => "Invalid credentials"
             ]);
+
+        
     }
 
     public function testShouldReturnTheFieldEmailIsRequire() {
@@ -76,6 +101,14 @@ class LoginTest extends TestCase
                     "expires_in" => 3600
                 ]
         ]);
+        $userToDelete = User::where('email', 'login@gmail.com')->first();
+        
+        if ($userToDelete) {
+            $userToDelete->delete();
+            echo 'Removed User.';
+        } else {
+            echo 'User does not exist.';
+        }
     }
 
 }

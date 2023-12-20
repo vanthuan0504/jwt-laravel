@@ -5,23 +5,33 @@ namespace Tests\Unit;
 use Tests\TestCase;
 use Database\Factories\UserFactory;
 use App\Models\User;
-use JWTAuth;
+use App\Models\Role;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class RefreshTokenTest extends TestCase
 {
-    public function testShouldNotGetUserProfile()
+    public function testShouldNotRegainAccessToken()
     {
         $response = $this->post('/api/auth/refresh');
 
-        $response->assertStatus(500);
-        $response->assertSee('Route [login] not defined');
+        //$response->assertStatus(500);
+        //$response->assertSee('Route [login] not defined');
+        $response->assertStatus(401)
+            ->assertJson([
+                "status" => false,
+                "message" => "Unauthentication"
+        ]);
 
     }
 
     public function testShouldReturnUserHasRegainedAccessToken() 
     {
+        $userRole = Role::where('code', 'USER')->first();
         $user = User::factory()->create([
             "name" => "Refresh Token",
+            "email" => 'refresh@gmail.com',
+            "role_id" => $userRole->id
+
         ]);
         // Simulate authentication by creating a token for the user
         // $token = $user->createToken('test-token')->plainTextToken;
@@ -38,16 +48,29 @@ class RefreshTokenTest extends TestCase
             ->assertJson([
                 "data" => [
                     "user" => [
-                        "name" => "Refresh Token"
+                        "name" => "Refresh Token",
+                        "email" => "refresh@gmail.com"
                     ]
                 ]   
         ]);
+        $userToDelete = User::where('email', 'refresh@gmail.com')->first();
+        
+        if ($userToDelete) {
+            $userToDelete->delete();
+            echo 'Removed User.';
+        } else {
+            echo 'User does not exist.';
+        }
     }
 
     public function testShouldSuccessfullyLoggedOut() 
     {
+        $userRole = Role::where('code', 'USER')->first();
         $user = User::factory()->create([
             "name" => "Refresh Token",
+            "email" => 'refresh@gmail.com',
+            "role_id" => $userRole->id
+
         ]);
         // Simulate authentication by creating a token for the user
         // $token = $user->createToken('test-token')->plainTextToken;
@@ -65,6 +88,15 @@ class RefreshTokenTest extends TestCase
                 "status" => true,
                 "message" => "User successfully signed out"  
         ]);
+
+        $userToDelete = User::where('email', 'refresh@gmail.com')->first();
+        
+        if ($userToDelete) {
+            $userToDelete->delete();
+            echo 'Removed User.';
+        } else {
+            echo 'User does not exist.';
+        }
     }
 
 

@@ -8,12 +8,13 @@ use App\Models\User;
 
 class RegisterTest extends TestCase
 {
-    public function testShouldReturnPassowrdDidNotMatch() {
+    public function testShouldReturnPassowrdDidNotMatch()
+    {
         $response = $this->postJson('/api/auth/register', [
-                "name" => "Laravel",
-                "email" => "register@gmail.com",
-                "password" => "Abc@12345",
-                "password_confirmation" => "Abc@123456"
+            "name" => "Laravel",
+            "email" => "register@gmail.com",
+            "password" => "Abc@12345",
+            "password_confirmation" => "Abc@123456"
         ]);
 
         $response->assertStatus(400)
@@ -24,14 +25,15 @@ class RegisterTest extends TestCase
                         "The password field confirmation does not match."
                     ]
                 ]
-        ]);
+            ]);
     }
 
-    public function testShouldReturnTheFieldNameIsRequire() {
+    public function testShouldReturnTheFieldNameIsRequire()
+    {
         $response = $this->postJson('/api/auth/register', [
-                "email" => "register@gmail.com",
-                "password" => "Abc@12345",
-                "password_confirmation" => "Abc@12345"
+            "email" => "register@gmail.com",
+            "password" => "Abc@12345",
+            "password_confirmation" => "Abc@12345"
         ]);
 
         $response->assertStatus(400)
@@ -42,28 +44,39 @@ class RegisterTest extends TestCase
                         "The name field is required."
                     ]
                 ]
-        ]);
+            ]);
     }
 
-    public function testShouldReturnUserSuccessfullyRegistered() {
+    public function testShouldReturnUserSuccessfullyRegistered()
+    {
         $response = $this->postJson('/api/auth/register', [
-                "name" => "Test",
-                "email" => "register@gmail.com",
-                "password" => "Abc@12345",
-                "password_confirmation" => "Abc@12345"
+            "name" => "Test",
+            "email" => "register@gmail.com",
+            "password" => "Abc@12345",
+            "password_confirmation" => "Abc@12345"
         ]);
 
         $response->assertStatus(201)
             ->assertJson([
                 'status' => true,
                 'message' => "User successfully registered"
-        ]);
+            ]);
+            
+        $userToDelete = User::where('email', 'register@gmail.com')->first();
+        
+        if ($userToDelete) {
+            $userToDelete->delete();
+            echo 'Removed User.';
+        } else {
+            echo 'User does not exist.';
+        }
     }
 
-    public function testShouldReturnEmailIsAlreadyTaken() {
+    public function testShouldReturnEmailIsAlreadyTaken()
+    {
 
         // First, create a user with the given email
-        User::factory()->create([
+        $user = User::factory()->create([
             'email' => 'register1@gmail.com',
         ]);
 
@@ -71,10 +84,10 @@ class RegisterTest extends TestCase
         $this->assertDatabaseHas('users', ['email' => 'register1@gmail.com']);
 
         $response = $this->postJson('/api/auth/register', [
-                "name" => "Test",
-                "email" => "register1@gmail.com",
-                "password" => "Abc@12345",
-                "password_confirmation" => "Abc@12345"
+            "name" => "Test",
+            "email" => "register1@gmail.com",
+            "password" => "Abc@12345",
+            "password_confirma tion" => "Abc@12345"
         ]);
 
         $response->assertStatus(400)
@@ -85,9 +98,7 @@ class RegisterTest extends TestCase
                         "The email has already been taken."
                     ]
                 ]
-        ]);
- 
+            ]);
+        User::destroy($user->id);
     }
-    
-
 }
